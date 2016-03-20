@@ -21,7 +21,7 @@ const paths = {
 };
 
 // Compile the javascript
-gulp.task('scripts', () => {
+gulp.task('scripts', function() {
   gulp.src(paths.scripts)
     .pipe(babel({
       presets: ['es2015'],
@@ -30,24 +30,24 @@ gulp.task('scripts', () => {
     .pipe(eslint.format())
     .pipe(concat('app.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('build/js'));
 });
 
 // Compile sass into css
-gulp.task('styles', () => {
+gulp.task('styles', function() {
   gulp.src(paths.styles)
     .pipe(sass())
     .pipe(postcss([autoprefixer, stylelint, minify]))
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('build/styles'));
 });
 
 // Compile jades to html
-gulp.task('jades', () => {
+gulp.task('jades', function() {
   gulp.src(paths.jades)
     .pipe(jade({
       pretty: true,
     }))
-    .pipe(inject(gulp.src(['./dist/**/*.js', './dist/**/*.css'], { read: false })))
+    .pipe(inject(gulp.src(['./build/**/*.js', './build/**/*.css'], { read: false })))
     .pipe(gulp.dest('build'));
 });
 

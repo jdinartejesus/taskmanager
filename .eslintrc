@@ -4,12 +4,14 @@
   },
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "jquery": true
   },
   "parser": "babel-eslint",
   "extends": "airbnb/base",
   "rules": {
     "quotes": [2, "single"],
-    "strict": [2, "never"]
+    "strict": [2, "never"],
+    object-shorthand: [2, "always",  { "ignoreConstructors": true }]
   }
 }

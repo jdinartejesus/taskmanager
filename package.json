@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/jdinartejesus/taskmanager#readme",
   "dependencies": {
+    "browserify": "^13.0.0",
     "gulp": "^3.9.1",
+    "gulp-connect": "^3.1.1",
     "material-design-lite": "^1.1.3",
     "mustache": "^2.2.1"
   },

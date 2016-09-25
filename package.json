@@ -33,7 +33,6 @@
     "basscss": "7.0.x",
     "director": "^1.2.8",
     "mustache": "^2.2.1",
-    "ractive": "^0.7.3",
     "wolfy87-eventemitter": "^5.1.0"
   },
   "devDependencies": {

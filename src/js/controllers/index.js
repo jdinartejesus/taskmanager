@@ -5,11 +5,14 @@ export default class Controller {
     this.eventEmitter = eventEmitter;
 
     //TODO: Organize events like backbone;
-    //events: {}
     this.eventEmitter.addListener('newTask', this._addTask.bind(this));
     this.eventEmitter.addListener('deleteTask', this._deleteTask.bind(this));
-    this.eventEmitter.addListener('doneTask', this._completedTask.bind(this));
+    this.eventEmitter.addListener('doneTask', this._doneTask.bind(this));
+    this.eventEmitter.addListener('editTask', this._editTask.bind(this));
+    this.eventEmitter.addListener('startEditTask', this._startEditTask.bind(this));
+    this.eventEmitter.addListener('cancelEditTask', this._cancelEditTask.bind(this));
     this.eventEmitter.addListener('toggleShowDoneTasks', this._toggleShowDoneTasks.bind(this));
+
   }
 
   showTasks() {
@@ -30,7 +33,7 @@ export default class Controller {
     });
   }
 
-  _completedTask(id, {completed}) {
+  _doneTask(id, {completed}) {
     if(!id) {
       return;
     }
@@ -42,13 +45,43 @@ export default class Controller {
   }
 
   _deleteTask(id) {
-    //TODO: Check if is int number
     if(!id) {
       return;
     }
 
     this.model.remove(id, data => {
       this.view.render('showEntries', data);
+    });
+  }
+
+  //TODO: Replace only the edited task
+  _cancelEditTask() {
+    this.model.read(data => {
+      this.view.render('showEntries', data);
+    })
+  }
+
+  _editTask(id, title) {
+
+    if(!id) { return; }
+
+    if (title.trim() === '') {
+      this.eventEmitter.emitEvent('cancelEditTask');
+      return;
+    }
+
+    this.model.update(id, {title}, data => {
+      this.view.render('showEntries', data);
+    });
+  }
+
+  _startEditTask(id) {
+    if(!id) {
+      return;
+    }
+
+    this.model.read(id, data => {
+      this.view.render('startEditTask', data[0]);
     });
   }
 

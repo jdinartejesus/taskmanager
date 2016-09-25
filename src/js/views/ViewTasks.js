@@ -11,11 +11,6 @@ export default class ViewTasks {
     this.toggleShowDoneTasksBtn = qs('.tasks-toggle-showdone');
     this.inputTaskElm = qs('[data-bind="newTodo"]');
 
-    this.editBtnSelector = '[data-bind="edit"]';
-    this.doneBtnSelector = '[data-bind="done"]';
-    this.deleteBtnSelector = '[data-bind="delete"]';
-
-
     //TODO: delegated events list like backbone
     on(this.inputTaskElm, 'change', () => {
       this.eventEmitter.emitEvent('newTask', [this.inputTaskElm.value]);
@@ -26,16 +21,34 @@ export default class ViewTasks {
       this.eventEmitter.emitEvent('toggleShowDoneTasks', [isVisible]);
     })
 
-    delegate(this.tasksListElm, this.deleteBtnSelector, 'click', (event) => {
+    delegate(this.tasksListElm, '[data-bind="edit"]', 'click', (event) => {
+      //TODO: Refactor this to prevent DRY principle
+      let taskElm = parent(event.target, 'li');
+      let taskID = taskElm.dataset.id;
+
+      this.eventEmitter.emitEvent('startEditTask', [taskID]);
+    });
+
+    delegate(this.tasksListElm, '[data-bind="delete"]', 'click', (event) => {
       let taskElm = parent(event.target, 'li');
       let taskID = taskElm.dataset.id;
       this.eventEmitter.emitEvent('deleteTask', [taskID]);
     });
 
-    delegate(this.tasksListElm, this.doneBtnSelector, 'click', (event) => {
+    delegate(this.tasksListElm, '[data-bind="done"]', 'click', (event) => {
       let taskElm = parent(event.target, 'li');
       let taskID = taskElm.dataset.id;
       this.eventEmitter.emitEvent('doneTask', [taskID, {completed: true}]);
+    });
+
+    delegate(this.tasksDoneListElm, '.task-edit', 'change', (event) => {
+      let taskElm = parent(event.target, 'li');
+      let taskID = taskElm.dataset.id;
+      this.eventEmitter.emitEvent('editTask', [taskID, event.target.value]);
+    });
+
+    delegate(this.tasksListElm, '.task-edit', 'blur', () => {
+      this.eventEmitter.emitEvent('cancelEditTask');
     });
   }
 
@@ -54,10 +67,12 @@ export default class ViewTasks {
       if(visible) {
         this.tasksDoneListElm.classList.remove('visible');
         this.tasksDoneListElm.style.display = 'none';
-      } else {
-        this.tasksDoneListElm.classList.add('visible');
-        this.tasksDoneListElm.style.display = 'block';
+
+        return;
       }
+
+      this.tasksDoneListElm.classList.add('visible');
+      this.tasksDoneListElm.style.display = 'block';
     }
 
     const _showCompleted = data => {
@@ -65,11 +80,26 @@ export default class ViewTasks {
       this.tasksDoneListElm.innerHTML = view;
     }
 
-    const viewCommands = {
+    const _startEditTask = item => {
+      const currentItem = qs(`li[data-id="${item.id}"]`);
+
+      if(!currentItem) {
+        return;
+      }
+
+      const input = `<input type="text" value="${item.title}" class="task-edit">`;
+
+      currentItem.querySelector('.task-title').innerHTML = input;
+      currentItem.classList.add('edit');
+      currentItem.querySelector('.task-edit').focus();
+    }
+
+    let viewCommands = {
       showEntries: _showEntries,
       clearInputNewTask: _clearInputNewTask,
       toggleDoneTasks: _toggleDoneTasks,
-      showCompleted: _showCompleted
+      showCompleted: _showCompleted,
+      startEditTask: _startEditTask
     }
 
     return viewCommands[viewCmd](parameter);

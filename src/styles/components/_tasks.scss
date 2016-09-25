@@ -21,6 +21,15 @@
 
     }
 
+    .task-edit {
+      background: none;
+      border: 0;
+      padding: 0;
+      color: $tasks-font-color;
+      font-size: $tasks-font-size;
+      font-weight: $tasks-font-weight;
+    }
+
     .task-controls {
       position: absolute;
       right: 0;
@@ -39,7 +48,7 @@
     }
   }
 
-  .tasks-list .task-item,
+  .tasks-list .task-item .task-title,
   .tasks-footer .task-input {
     border-bottom: 2px solid $tasks-bottom-border-color;
     font-size: $tasks-font-size;

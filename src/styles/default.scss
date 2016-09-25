@@ -1,3 +1,22 @@
+@import './variables';
+@import './components/tasks';
+@import './components/completed';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  background: green;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.app {
+  background-color: $app-background-color;
+  min-height: 100%;
+  position: absolute;
+  width: 100%;
 }

@@ -4,9 +4,36 @@
     <meta charset="utf-8">
     <title>Task Manager</title>
     <link rel="stylesheet" href="./default.css" media="screen" charset="utf-8">
+    <!--TODO: Move to NPM -->
+    <link href="https://npmcdn.com/basscss@7.1.1/css/basscss.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
   <body>
-    <div id="app">
+    <div class="app">
+      <div class="clearfix">
+        <div class="col-8 px2 mx-auto container">
+          <div class="time">
+            15:50
+          </div>
+          <div class="tasks">
+            <div class="tasks-headline">
+              <h1>What's the next thing?</h1>
+            </div>
+            <ul class="tasks-list">
+            </ul>
+            <div class="tasks-footer">
+              <input class="task-input" type="text" placeholder="Add new task" data-bind="newTodo">
+            </div>
+          </div>
+          <div class="completed-tasks">
+            <button class="tasks-toggle-showdone">
+              <i class="material-icons">done_all</i>
+            </button>
+            <ul class="tasks-list">
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
     <script src="./app.js"></script>
   </body>

@@ -18,19 +18,20 @@
     position: relative;
 
     .task-title {
-
+      font-size: $tasks-font-size;
     }
 
     .task-edit {
       background: none;
       border: 0;
-      padding: 0;
       color: $tasks-font-color;
       font-size: $tasks-font-size;
       font-weight: $tasks-font-weight;
+      padding: 0;
     }
 
     .task-controls {
+      display: none;
       position: absolute;
       right: 0;
       top: 0;
@@ -39,13 +40,17 @@
     .task-controls__buttons {
       background: none;
       border: 0;
-      color: #fff;
+      color: $tasks-controls-color;
       text-align: center;
 
       &:hover {
-        color: #999;
+        color: $tasks-controls-color-hover;
       }
     }
+  }
+
+  .task-item:hover .task-controls {
+    display: block;
   }
 
   .tasks-list .task-item .task-title,

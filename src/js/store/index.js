@@ -2,15 +2,14 @@ export default class Store {
   constructor(name, cb) {
     this._dbName = name;
     const dumpData = [
-      {id: '2121', title: 'Task 1'},
-      {id: '2122', title: 'Task 2'},
-      {id: '2123', title: 'Task 3'}
+      {id: '2121', title: 'Task 1', completed: false},
+      {id: '2122', title: 'Task 2', completed: true},
+      {id: '2123', title: 'Task 3', completed: false}
     ];
 
     if(!window.localStorage[name]) {
       const data = {
-        tasks: dumpData,
-        completed: []
+        tasks: dumpData
       };
 
       localStorage[name] = JSON.stringify(data);

@@ -53,6 +53,7 @@ export default class Controller {
 
     this.model.remove(id, data => {
       this.view.render('showEntries', data);
+      this.view.render('showCompleted', data);
     });
   }
 

@@ -1,4 +1,4 @@
-import {qs, parent, on, delegate} from '../helpers/';
+import {qs, parent, on, delegate} from './helpers';
 
 const getTaskID = (target, elem) => {
   let taskElm = parent(target, elem);
@@ -20,7 +20,6 @@ export default class ViewTasks {
     this.inputTaskElm = qs('[data-bind="newTodo"]');
     this.clockElm = qs('.clock');
 
-    //TODO: delegated events list like backbone
     on(this.inputTaskElm, 'change', () => {
       this.eventEmitter.emit('newTask', this.inputTaskElm.value);
     });

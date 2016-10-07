@@ -12,25 +12,25 @@
     <div class="app">
       <div class="clearfix">
         <div class="col-8 px2 mx-auto container">
-          <div class="time">
-            15:50
-          </div>
-          <div class="tasks">
-            <div class="tasks-headline">
-              <h1>What's the next thing?</h1>
+          <div class="clock">0:00</div>
+          <div class="tasks-manager">
+            <div class="tasks">
+              <div class="tasks-headline">
+                <h1>What's the next thing?</h1>
+              </div>
+              <ul class="tasks-list">
+              </ul>
+              <div class="tasks-footer">
+                <input class="task-input" type="text" placeholder="Add new task" data-bind="newTodo">
+              </div>
             </div>
-            <ul class="tasks-list">
-            </ul>
-            <div class="tasks-footer">
-              <input class="task-input" type="text" placeholder="Add new task" data-bind="newTodo">
+            <div class="tasks completed">
+              <button class="tasks-toggle-showdone">
+                <i class="material-icons">done_all</i>
+              </button>
+              <ul class="tasks-list">
+              </ul>
             </div>
-          </div>
-          <div class="completed-tasks">
-            <button class="tasks-toggle-showdone">
-              <i class="material-icons">done_all</i>
-            </button>
-            <ul class="tasks-list">
-            </ul>
           </div>
         </div>
       </div>

@@ -4,15 +4,17 @@ export default class Controller {
     this.view = view;
     this.eventEmitter = eventEmitter;
 
-    //TODO: Organize events like backbone;
-    this.eventEmitter.addListener('newTask', this._addTask.bind(this));
-    this.eventEmitter.addListener('deleteTask', this._deleteTask.bind(this));
-    this.eventEmitter.addListener('doneTask', this._doneTask.bind(this));
-    this.eventEmitter.addListener('editTask', this._editTask.bind(this));
-    this.eventEmitter.addListener('startEditTask', this._startEditTask.bind(this));
-    this.eventEmitter.addListener('cancelEditTask', this._cancelEditTask.bind(this));
-    this.eventEmitter.addListener('toggleShowDoneTasks', this._toggleShowDoneTasks.bind(this));
-
+    this.eventEmitter.addListeners({
+      'newTask': this._addTask.bind(this),
+      'deleteTask': this._deleteTask.bind(this),
+      'doneTask': this._doneTask.bind(this),
+      'editTask': this._editTask.bind(this),
+      'startEditTask': this._startEditTask.bind(this),
+      'cancelEditTask':  this._cancelEditTask.bind(this),
+      'toggleShowDoneTasks': this._toggleShowDoneTasks.bind(this),
+      'redoDoneTask': this._redoDoneTask.bind(this),
+      'updateClock': this._updateClock.bind(this)
+    })
   }
 
   showTasks() {
@@ -75,6 +77,17 @@ export default class Controller {
     });
   }
 
+  _redoDoneTask(id, {completed}) {
+    if(!id) {
+      return;
+    }
+
+    this.model.update(id, {completed}, data => {
+      this.view.render('showEntries', data);
+      this.view.render('showCompleted', data);
+    });
+  }
+
   _startEditTask(id) {
     if(!id) {
       return;
@@ -86,6 +99,22 @@ export default class Controller {
   }
 
   _toggleShowDoneTasks(isVisible) {
-    this.view.render('toggleDoneTasks', isVisible)
+    this.view.render('toggleDoneTasks', isVisible);
+  }
+
+  _showTasksControls(id) {
+    this.view.render('showTasksControls', id);
+  }
+
+  _updateClock() {
+    const currentTime = new Date();
+    const hours = currentTime.getHours();
+    let minutes = currentTime.getMinutes();
+
+    if(minutes < 10) {
+      minutes = '0' + minutes
+    }
+
+    this.view.render('showClock', {hours, minutes});
   }
 }

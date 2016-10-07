@@ -1,55 +1,68 @@
 import {qs, parent, on, delegate} from '../helpers/';
 
+const getTaskID = (target, elem) => {
+  let taskElm = parent(target, elem);
+  if (!taskElm.dataset && !taskElm.dataset.id) {
+    return;
+  }
+  return taskElm.dataset.id;
+}
+
 export default class ViewTasks {
   constructor(template, eventEmitter) {
     this.template = template;
     this.eventEmitter = eventEmitter;
 
-    this.appContainer = qs('.container');
+    this.taskManager = qs('.tasks-manager');
     this.tasksListElm = qs('.tasks > .tasks-list');
-    this.tasksDoneListElm = qs('.completed-tasks > .tasks-list')
+    this.tasksDoneListElm = qs('.tasks.completed > .tasks-list');
     this.toggleShowDoneTasksBtn = qs('.tasks-toggle-showdone');
     this.inputTaskElm = qs('[data-bind="newTodo"]');
+    this.clockElm = qs('.clock');
 
     //TODO: delegated events list like backbone
     on(this.inputTaskElm, 'change', () => {
-      this.eventEmitter.emitEvent('newTask', [this.inputTaskElm.value]);
+      this.eventEmitter.emit('newTask', this.inputTaskElm.value);
     });
 
     on(this.toggleShowDoneTasksBtn, 'click', () => {
       const isVisible = this.tasksDoneListElm.classList.contains('visible') ? true : false;
-      this.eventEmitter.emitEvent('toggleShowDoneTasks', [isVisible]);
-    })
-
-    delegate(this.tasksListElm, '[data-bind="edit"]', 'click', (event) => {
-      //TODO: Refactor this to prevent DRY principle
-      let taskElm = parent(event.target, 'li');
-      let taskID = taskElm.dataset.id;
-
-      this.eventEmitter.emitEvent('startEditTask', [taskID]);
+      this.eventEmitter.emit('toggleShowDoneTasks', isVisible);
     });
 
-    delegate(this.tasksListElm, '[data-bind="delete"]', 'click', (event) => {
-      let taskElm = parent(event.target, 'li');
-      let taskID = taskElm.dataset.id;
-      this.eventEmitter.emitEvent('deleteTask', [taskID]);
+    delegate(this.taskManager, '[data-bind="edit"]', 'click', (event) => {
+      const taskID = getTaskID(event.target, 'li');
+      this.eventEmitter.emit('startEditTask', taskID);
     });
 
-    delegate(this.tasksListElm, '[data-bind="done"]', 'click', (event) => {
-      let taskElm = parent(event.target, 'li');
-      let taskID = taskElm.dataset.id;
+    delegate(this.taskManager, '[data-bind="delete"]', 'click', (event) => {
+      const taskID = getTaskID(event.target, 'li');
+      this.eventEmitter.emit('deleteTask', taskID);
+    });
+
+    delegate(this.taskManager, '[data-bind="done"]', 'click', (event) => {
+      const taskID = getTaskID(event.target, 'li');
       this.eventEmitter.emitEvent('doneTask', [taskID, {completed: true}]);
     });
 
-    delegate(this.tasksDoneListElm, '.task-edit', 'change', (event) => {
-      let taskElm = parent(event.target, 'li');
-      let taskID = taskElm.dataset.id;
+    delegate(this.taskManager, '.task-edit', 'change', (event) => {
+      const taskID = getTaskID(event.target, 'li');
       this.eventEmitter.emitEvent('editTask', [taskID, event.target.value]);
     });
 
-    delegate(this.tasksListElm, '.task-edit', 'blur', () => {
-      this.eventEmitter.emitEvent('cancelEditTask');
+    delegate(this.taskManager, '.task-edit', 'blur', () => {
+      this.eventEmitter.emit('cancelEditTask');
     });
+
+    delegate(this.taskManager, '[data-bind="redo"]', 'click', (event) => {
+      const taskID = getTaskID(event.target, 'li');
+      this.eventEmitter.emitEvent('redoDoneTask', [taskID, {completed: false}]);
+    });
+
+    const updatingClock = function () {
+      this.eventEmitter.emit('updateClock');
+    }
+    setInterval(updatingClock.bind(this), 1000);
   }
 
   render(viewCmd, parameter) {
@@ -62,17 +75,12 @@ export default class ViewTasks {
       this.inputTaskElm.value = '';
     }
 
-    // TODO: Refactor remove styles from js to css
     const _toggleDoneTasks = (visible) => {
       if(visible) {
         this.tasksDoneListElm.classList.remove('visible');
-        this.tasksDoneListElm.style.display = 'none';
-
         return;
       }
-
       this.tasksDoneListElm.classList.add('visible');
-      this.tasksDoneListElm.style.display = 'block';
     }
 
     const _showCompleted = data => {
@@ -89,9 +97,16 @@ export default class ViewTasks {
 
       const input = `<input type="text" value="${item.title}" class="task-edit">`;
 
-      currentItem.querySelector('.task-title').innerHTML = input;
+      qs('.task-title', currentItem).innerHTML = input;
       currentItem.classList.add('edit');
-      currentItem.querySelector('.task-edit').focus();
+      qs('.task-edit', currentItem).focus();
+    }
+
+    const _showClock = date => {
+      const hours = date.hours;
+      const minutes = date.minutes;
+
+      this.clockElm.innerHTML = `${hours}:${minutes}`;
     }
 
     let viewCommands = {
@@ -99,7 +114,8 @@ export default class ViewTasks {
       clearInputNewTask: _clearInputNewTask,
       toggleDoneTasks: _toggleDoneTasks,
       showCompleted: _showCompleted,
-      startEditTask: _startEditTask
+      startEditTask: _startEditTask,
+      showClock:_showClock
     }
 
     return viewCommands[viewCmd](parameter);
